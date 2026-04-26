@@ -6,7 +6,7 @@
 %   carrera/3     → id, nombre, descripción
 %
 % Este archivo se IRA COMPLETANDO en commits posteriores.
-% Por ahora solo 2 carreras básicas.
+% Por ahora solo 4 carreras básicas.
 % ============================================================
 
 :- module(orientador_bd, [
@@ -17,7 +17,7 @@
 ]).
 
 % -------------------------------------------------
-% CARRERAS (solo 2 por ahora)
+% CARRERAS (4 por ahora)
 % -------------------------------------------------
 
 carrera(sistemas,
@@ -26,8 +26,16 @@ carrera(sistemas,
 
 carrera(medicina,
     'Medicina',
-    'Diagnóstico, tratamiento y prevención de doenças humanas').
+    'Diagnóstico, tratamiento y prevención de enfermedades humanas').
+
+carrera(derecho,
+    'Derecho',
+    'Estudio y aplicación de normas jurídicas que regulan la sociedad').
+
+carrera(psicologia,
+    'Psicología',
+    'Estudio del comportamiento humano, la mente y la salud mental').
 
 % Por completar:
-% - derecho, psicologia, arquitectura, etc.
+% - más carreras (arquitectura, administración, etc.)
 % - afinidades, fortalezas, antagonias
