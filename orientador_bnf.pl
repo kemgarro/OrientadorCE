@@ -26,7 +26,6 @@ tokenizar(Linea, Tokens) :-
 
 % ============================================================
 % GRAMÁTICA DCG CON -->
-% Se ejecuta con phrase/2
 % ============================================================
 
 oracion --> sintagma_nominal, sintagma_verbal.
@@ -64,8 +63,6 @@ sustantivo --> [personas].
 sustantivo --> [computadoras].
 sustantivo --> [ideas].
 sustantivo --> [naturaleza].
-sustantivo --> [analisis].
-sustantivo --> [logica].
 sustantivo --> [espanol].
 sustantivo --> [ingles].
 
@@ -76,8 +73,6 @@ determinante --> [el].
 determinante --> [la].
 determinante --> [los].
 determinante --> [las].
-determinante --> [un].
-determinante --> [una].
 
 adjetivo --> [creativo].
 adjetivo --> [artistico].
@@ -110,7 +105,6 @@ nexo --> [pero].
 
 enlace --> [pero, no].
 enlace --> [aunque, no].
-enlace --> [sin, embargo].
 
 % ============================================================
 % MARCADORES DCG
@@ -144,7 +138,12 @@ marcador_positivo --> [amo], !.
 marcador_positivo --> [adoro], !.
 marcador_positivo --> [tengo, facilidad], !.
 marcador_positivo --> [tengo, facilidad, para], !.
-marcador_positivo --> [me, siento, bien], !.
+marcador_positivo --> [me, gustaria, ser], !.
+marcador_positivo --> [me, gustaria, estudiar], !.
+marcador_positivo --> [me, gustaria, trabajar], !.
+marcador_positivo --> [quiero, ser], !.
+marcador_positivo --> [quiero, estudiar], !.
+marcador_positivo --> [me, veo, trabajando], !.
 
 marcador_negativo --> [no, me, gusta], !.
 marcador_negativo --> [no, me, interesa], !.
@@ -172,7 +171,7 @@ marcador_negativo --> [soy, malo, en], !.
 marcador_negativo --> [soy, mala, en], !.
 
 % ============================================================
-% INTERFAZ DCG PÚBLICA
+% INTERFAZ DCG
 % ============================================================
 
 dcg_intencion(Tokens, Intencion) :-
@@ -217,6 +216,10 @@ analizar([_ | Resto], Pol, Pares) :-
 detectar_marcador([me, gusta | R], positivo, R) :- !.
 detectar_marcador([me, gusta, mucho | R], positivo, R) :- !.
 detectar_marcador([me, gusta, bien | R], positivo, R) :- !.
+detectar_marcador([me, gusta, la, atencion | R], positivo, R) :- !.
+detectar_marcador([me, gusTan | R], positivo, R) :- !.
+detectar_marcador([me, gusTan, mucho | R], positivo, R) :- !.
+detectar_marcador([me, gusTan, bien | R], positivo, R) :- !.
 detectar_marcador([me, encanta | R], positivo, R) :- !.
 detectar_marcador([me, encanta, mucho | R], positivo, R) :- !.
 detectar_marcador([me, apasiona | R], positivo, R) :- !.
@@ -243,8 +246,15 @@ detectar_marcador([adoro | R], positivo, R) :- !.
 detectar_marcador([tengo, facilidad | R], positivo, R) :- !.
 detectar_marcador([tengo, facilidad, para | R], positivo, R) :- !.
 detectar_marcador([me, siento, bien | R], positivo, R) :- !.
+detectar_marcador([me, gustaria, ser | R], positivo, R) :- !.
+detectar_marcador([me, gustaria, estudiar | R], positivo, R) :- !.
+detectar_marcador([me, gustaria, trabajar | R], positivo, R) :- !.
+detectar_marcador([quiero, ser | R], positivo, R) :- !.
+detectar_marcador([quiero, estudiar | R], positivo, R) :- !.
+detectar_marcador([me, veo, trabajando | R], positivo, R) :- !.
 
 detectar_marcador([no, me, gusta | R], negativo, R) :- !.
+detectar_marcador([no, me, gusTan | R], negativo, R) :- !.
 detectar_marcador([no, me, interesa | R], negativo, R) :- !.
 detectar_marcador([no, me, interesan | R], negativo, R) :- !.
 detectar_marcador([no, soy, bueno | R], negativo, R) :- !.
@@ -275,9 +285,9 @@ separar_pares([(K, positivo) | R], [K | Pos], Neg) :- !,
 separar_pares([(K, negativo) | R], Pos, [K | Neg]) :- !,
     separar_pares(R, Pos, Neg).
 
-% -------------------------------------------------
-% SINÓNIMOS
-% -------------------------------------------------
+% ============================================================
+% SINÓNIMOS AMPLIADOS
+% ============================================================
 
 sinonimo(tecnologia, tecnologia).
 sinonimo(programacion, programacion).
@@ -305,8 +315,8 @@ sinonimo(economia, economia).
 sinonimo(finanzas, finanzas).
 sinonimo(liderazgo, liderazgo).
 sinonimo(fisica, fisica).
-sinonimo(infraestructura, infraestructura).
-sinonimo(estructuras, estructuras).
+sinonimo(infraestructura, infraestrutura).
+sinonimo(estructuras, estruturas).
 sinonimo(calculo, calculo).
 sinonimo(creatividad, creatividad).
 sinonimo(creativo, creatividad).
@@ -359,3 +369,19 @@ sinonimo(espanol, idiomas).
 sinonimo(ingles, idiomas).
 sinonimo(musica, musica).
 sinonimo(matematicas, matematicas).
+
+% Profesiones
+sinonimo(doctora, salud).
+sinonimo(doctor, salud).
+sinonimo(medico, salud).
+sinonimo(medica, salud).
+sinonimo(enfermera, salud).
+sinonimo(enfermero, salud).
+sinonimo(abogada, derecho).
+sinonimo(abogado, derecho).
+sinonimo(arquitecta, arquitectura).
+sinonimo(arquitecto, arquitectura).
+
+% Idiomas
+sinonimo(idiomas, idiomas).
+sinonimo(idioma, idiomas).
