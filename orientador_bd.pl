@@ -68,6 +68,10 @@ carrera(comunicacion,
     'Comunicación Colectiva',
     'Producción periodística y medios digitales').
 
+carrera(gastronomia,
+    'Gastronomía',
+    'Arte culinario, dirección de cocina y gestión de restaurantes').
+
 % -------------------------------------------------
 % AFINIDADES
 % -------------------------------------------------
@@ -95,6 +99,8 @@ afinidades(educacion, [enseniar, ninos, jovenes, pedagogia, comunidad, personas]
 afinidades(electronica, [circuitos, fisica, robotica, automatizacion, hardware, programacion]).
 
 afinidades(comunicacion, [medios, periodismo, escritura, creatividad, fotografia, cine]).
+
+afinidades(gastronomia, [cocina, alimentacion, gastronomia, comida, restauracion, nutricion, servicio, chefs, culinaria, reposteria, alta_cocina, restaurantes, gestion_restaurante]).
 
 % -------------------------------------------------
 % FORTALEZAS
@@ -124,6 +130,8 @@ fortalezas(electronica, [logico, analitico, detallista, tecnico]).
 
 fortalezas(comunicacion, [creativo, comunicativo, curioso, sociable]).
 
+fortalezas(gastronomia, [creativo, organizador, limpio, servicio, puntual, trabajo_en_equipo, chef, gestion]).
+
 % -------------------------------------------------
 % ANTAGONÍAS
 % -------------------------------------------------
@@ -151,3 +159,5 @@ antagonias(educacion, [tecnologia_profunda, trabajo_solitario]).
 antagonias(electronica, [arte, humanidades, escritura_intensiva]).
 
 antagonias(comunicacion, [matematicas, ciencias_exactas, trabajo_solitario]).
+
+antagonias(gastronomia, [oficina, trabajo_sedentario, tecnologia_profunda, matematicas_avanzadas, ciencias_exactas, trabajo_solitario]).

@@ -91,8 +91,24 @@ decidir([P1-C1, P2-C2 | _], _, _) :-
     P1 - P2 =< Delta, !,
     carrera(C1, N1, _),
     carrera(C2, N2, _),
-    format('Recomendacion doble: ~w y ~w~n', [N1, N2]).
+    format('Recomendacion doble: ~w y ~w~n', [N1, N2]),
+    writeln('--- Detalles primera opcion ---'), explicar_recomendacion(C1),
+    writeln('--- Detalles segunda opcion ---'), explicar_recomendacion(C2).
 
 decidir([P1-C1 | _], _, _) :-
     carrera(C1, N1, Desc),
-    format('Recomendacion: ~w~n~w~nPuntaje: ~w~n', [N1, Desc, P1]).
+    format('Recomendacion: ~w~n~w~nPuntaje: ~w~n', [N1, Desc, P1]),
+    nl, writeln('--- Detalles de la carrera ---'),
+    explicar_recomendacion(C1).
+
+% ============================================================
+% EXPLICACIÓN DE RECOMENDACIÓN
+% ============================================================
+
+explicar_recomendacion(Carrera) :-
+    afinidades(Carrera, Afins),
+    fortalezas(Carrera, Forts),
+    antagonias(Carrera, Ants),
+    format('  Intereses   : ~w~n', [Afins]),
+    format('  Habilidades: ~w~n', [Forts]),
+    format('  No favor   : ~w~n', [Ants]).
