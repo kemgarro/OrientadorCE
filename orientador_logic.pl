@@ -11,7 +11,7 @@
     calcular_y_recomendar/2
 ]).
 
-:- use_module('orientador_bd.pl').
+:- [orientador_bd].
 :- use_module(library(lists)).
 
 % ============================================================
