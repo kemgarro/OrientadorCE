@@ -1,22 +1,19 @@
 % ============================================================
 % orientador_main.pl  –  Integrador  |  OrientadorCE
 % ============================================================
-%
-% Punto de entrada del sistema experto.
+% Archivo principal - punto de entrada del sistema experto.
 % Requiere los módulos: orientador_bd.pl, orientador_bnf.pl, orientador_logic.pl
-%
-% USO:
-%   $ swipl orientador_main.pl
-%   ?- iniciar.
-%
-% ============================================================
+
+:- set_prolog_flag(encoding, utf8).
 
 :- [orientador_bd].
 :- [orientador_bnf].
 :- [orientador_logic].
 
+% Inicia el programa automáticamente al cargar
 :- initialization(main, main).
 
+% main: flujo principal del programa
 main :-
     mostrar_bienvenida,
     findall(N-T, pregunta(N, T), Pares),
@@ -38,6 +35,7 @@ mostrar_bienvenida :-
     writeln('No hay respuestas correctas ni incorrectas.'),
     nl.
 
+% Las 5 preguntas que se hacen al usuario
 pregunta(1, 'Que actividades o temas te apasionan en tu vida diaria o en la escuela?').
 pregunta(2, 'En que materias o habilidades eres bueno? Hay alguna que te cueste trabajo?').
 pregunta(3, 'Prefieres trabajar con personas, con maquinas, con ideas abstractas o con la naturaleza?').
@@ -87,6 +85,7 @@ intentar_de_nuevo(Intentos, AccPos, AccNeg, FP, FN) :-
     ;   FP = AccPos, FN = AccNeg
     ).
 
+% leer_linea: lee lo que escribe el usuario
 leer_linea(Linea) :-
     read_line_to_string(user_input, Str),
     atom_string(Linea, Str).
@@ -94,6 +93,7 @@ leer_linea(Linea) :-
 % ============================================================
 % CASOS DEMO
 % ============================================================
+% casos_demo: ejemplos predefinidos para probar el sistema
 
 caso_demo(tecnico,
     'Perfil tecnico: programacion, logica, matematicas',

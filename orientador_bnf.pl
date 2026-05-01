@@ -1,19 +1,14 @@
 % ============================================================
 % orientador_bnf.pl  –  Parser de Lenguaje Natural  |  OrientadorCE
 % ============================================================
-%
-% Parser de lenguaje natural usando DCG Real.
-%
-% CUMPLIMIENTO DEL REQUISITO DCG:
-% ----------------------------
-% Este código USA DEFClause Grammar (DCG) con la notación --> 
-% que se ejecuta mediante phrase/2 o phrase/3.
-% ============================================================
+% Parser de lenguaje natural - convierte lo que escribe el usuario
+% en palabras clave que el sistema puede entender.
+% Usa DCG (Definite Clause Grammar) para analizar oraciones.
 
 :- use_module(library(lists)).
 
 % ============================================================
-% GRAMÁTICA DCG REAL
+% GRAMÁTICA DCG - define cómo analizar oraciones
 % Se ejecuta con phrase/2 o phrase/3
 % ============================================================
 
@@ -228,6 +223,7 @@ separar_pares([(K, negativo) | R], Pos, [K | Neg]) :- !,
 
 % ============================================================
 % TOKENIZADOR Y NORMALIZADOR
+% Convierte texto a palabras clave, elimina tildes y pasa a minúsculas
 % ============================================================
 
 tokenizar(Linea, Tokens) :-
@@ -238,10 +234,17 @@ tokenizar(Linea, Tokens) :-
     maplist([S, A]>>(atom_string(A0, S), quitar_tildes(A0, A)), Limpios, Tokens).
 
 quitar_tildes(AtomIn, AtomOut) :-
-    downcase_atom(AtomIn, AtomOut).
+    downcase_atom(AtomIn, T1),
+    atom_chars(T1, Chars),
+    maplist(sin_tilde, Chars, Clean),
+    atom_chars(AtomOut, Clean).
 
-% ============================================================
-% DETECCIN DE MARCADORES
+sin_tilde(C, S) :- member(C-S, [á-a,é-e,í-i,ó-o,ú-u,ñ-n,ü-u,ö-o,ë-e]).
+sin_tilde(C, C) :- \+ member(C, [á,é,í,ó,ú,ñ,ü,ö,ë]).
+
+% DETECCIÓN DE MARCADORES
+% Encuentra palabras como "me gusta", "no quiero", "jamás" para saber
+% si el usuario está diciendo algo positivo o negativo
 % ============================================================
 
 % ---- Marcadores NEGATIVOS ----
@@ -259,6 +262,21 @@ detectar_marcador([no, soy, buena          | R], negativo, R) :- !.
 detectar_marcador([no, soy                 | R], negativo, R) :- !.
 detectar_marcador([no, quiero              | R], negativo, R) :- !.
 detectar_marcador([no, me, ve             | R], negativo, R) :- !.
+detectar_marcador([no, me, gustaria, ser  | R], negativo, R) :- !.
+detectar_marcador([no, me, gustaria, trabajar | R], negativo, R) :- !.
+detectar_marcador([no, me, gustaria, ser   | R], negativo, R) :- !.
+detectar_marcador([no, me, interesa, ser   | R], negativo, R) :- !.
+detectar_marcador([no, me, interesa, trabajar | R], negativo, R) :- !.
+detectar_marcador([no, me, veo, como       | R], negativo, R) :- !.
+detectar_marcador([no, me, veo, en         | R], negativo, R) :- !.
+detectar_marcador([nunca, me, gustaria     | R], negativo, R) :- !.
+detectar_marcador([nunca, me, interesa      | R], negativo, R) :- !.
+detectar_marcador([jamas, me, gustaria      | R], negativo, R) :- !.
+detectar_marcador([jamas, me, interesa      | R], negativo, R) :- !.
+detectar_marcador([no, me, veo,trabajando   | R], negativo, R) :- !.
+detectar_marcador([ni, quiero, ser         | R], negativo, R) :- !.
+detectar_marcador([ni, me, gustaria        | R], negativo, R) :- !.
+detectar_marcador([tampoco, me, gustaria    | R], negativo, R) :- !.
 detectar_marcador([pero, no                | R], negativo, R) :- !.
 detectar_marcador([aunque, no              | R], negativo, R) :- !.
 detectar_marcador([se, me, hace, dificil   | R], negativo, R) :- !.
@@ -381,7 +399,8 @@ detectar_marcador([domino, el            | R], positivo, R) :- !.
 detectar_marcador([domino, la             | R], positivo, R) :- !.
 
 % ============================================================
-% TABLA DE SINONIMOS
+% TABLA DE SINONIMOS - palabras que el sistema entiende
+% Cada palabra del usuario se mapea a una palabra clave
 % ============================================================
 
 % ---- tecnologia
@@ -1291,3 +1310,576 @@ sinonimo(oficina,           trabajo_sedentario).
 sinonimo(escritura_intensiva, escritura).
 sinonimo(rechazo_arte,      arte).
 sinonimo(arte_visual,       arte).
+
+% ============================================================
+% NUEVOS SINONIMOS - Fase 1: Investigación y Ciencia
+% ============================================================
+
+sinonimo(investigacion,       investigacion).
+sinonimo(investigar,          investigacion).
+sinonimo(investigador,       investigacion).
+sinonimo(investigadora,      investigacion).
+sinonimo(laboratorio,        laboratorio).
+sinonimo(lab,                laboratorio).
+sinonimo(labs,               laboratorio).
+sinonimo(cientifico,        investigacion).
+sinonimo(cientifica,        investigacion).
+sinonimo(descubrimiento,    investigacion).
+sinonimo(descubrir,         investigacion).
+sinonimo(ciencia,           ciencia).
+sinonimo(cientifico,        ciencia).
+sinonimo(cientifica,        ciencia).
+sinonimo(experimentacion,   experimentacion).
+sinonimo(experimento,       experimentacion).
+sinonimo(modelado,          modelado).
+sinonimo(simulacion,        simulacion).
+sinonimo(simular,           simulacion).
+sinonimo(analisis,          analisis).
+sinonimo(analisis_de_datos, analisis).
+sinonimo(teoria,            teoria).
+sinonimo(teorico,           teoria).
+sinonimo(teorica,           teoria).
+sinonimo(formula,           teoria).
+sinonimo(ecuacion,          teoria).
+
+% ============================================================
+% Fase 2: Innovación y Desarrollo
+% ============================================================
+
+sinonimo(innovacion,         innovacion).
+sinonimo(innovar,            innovacion).
+sinonimo(innovador,         innovacion).
+sinonimo(innovadora,        innovacion).
+sinonimo(innovador,         innovacion).
+sinonimo(desarrollo,        desarrollo).
+sinonimo(desarrollar,       desarrollo).
+sinonimo(desarrollador,     desarrollo).
+sinonimo(crear,             innovacion).
+sinonimo(creacion,          innovacion).
+sinonimo(creativo,          innovacion).
+sinonimo(creativa,          innovacion).
+sinonimo(inventar,          innovacion).
+sinonimo(invento,           innovacion).
+sinonimo(prototipo,         prototipado).
+sinonimo(prototipar,        prototipado).
+sinonimo(invento,           innovacion).
+sinonimo(mejora,            innovacion).
+sinonimo(mejorar,           innovacion).
+sinonimo(avance,            innovacion).
+sinonimo(avanzar,           innovacion).
+sinonimo(tecnologia,        tecnologia).
+sinonimo(tecnologias,       tecnologia).
+sinonimo(tecnologico,       tecnologia).
+sinonimo(tecnologica,       tecnologia).
+sinonimo(tecnologia_avanzada, tecnologia).
+sinonimo(tecnologia_depunta, tecnologia).
+sinonimo(tecnologico,       tecnologia).
+
+% ============================================================
+% Fase 3: NASA y Espacio
+% ============================================================
+
+sinonimo(nasa,               espacio).
+sinonimo(espacio,            espacio).
+sinonimo(espacial,           espacio).
+sinonimo(aeroespacial,      espacio).
+sinonimo(aeronautica,       aeroespacial).
+sinonimo(aeronautico,       aeroespacial).
+sinonimo(satelite,          satelite).
+sinonimo(satelites,         satelite).
+sinonimo(cohete,            cohete).
+sinonimo(cohetes,           cohete).
+sinonimo(astronauta,        astronauta).
+sinonimo(astronautas,       astronauta).
+sinonimo(astronomia,        astronomia).
+sinonimo(astronomico,       astronomia).
+sinonimo(universo,          universo).
+sinonimo(galaxia,           galaxia).
+sinonimo(planeta,           planeta).
+sinonimo(mision_espacial,   espacio).
+sinonimo(viaje_espacial,    espacio).
+sinonimo(orbitas,           orbita).
+sinonimo(orbita,            orbita).
+sinonimo(aerodinamica,      aerodinamica).
+sinonimo(vuelo,             vuelo).
+sinonimo(volar,             vuelo).
+sinonimo(aeronave,          aeronave).
+sinonimo(aeronaves,         aeronave).
+sinonimo(avion,             aeronave).
+sinonimo(aviones,           aeronave).
+
+% ============================================================
+% Fase 4: Máquinas, Robótica y Sistemas
+% ============================================================
+
+sinonimo(maquina,           maquinas).
+sinonimo(maquinas,          maquinas).
+sinonimo(robot,             robotica).
+sinonimo(robots,            robotica).
+sinonimo(robotica,          robotica).
+sinonimo(robotica,          robotica).
+sinonimo(brazo_robotico,   robotica).
+sinonimo(dron,              robotica).
+sinonimo(drones,            robotica).
+sinonimo(automatizacion,   automatizacion).
+sinonimo(automatizar,      automatizacion).
+sinonimo(automatizado,     automatizacion).
+sinonimo(circuito,         circuitos).
+sinonimo(circuitos,        circuitos).
+sinonimo(chip,             electronica).
+sinonimo(chips,            electronica).
+sinonimo(electronica,      electronica).
+sinonimo(electronico,      electronica).
+sinonimo(electronica,      electronica).
+sinonimo(microcontrolador, microcontrolador).
+sinonimo(microchip,        electronica).
+sinonimo(sensor,            sensores).
+sinonimo(sensores,         sensores).
+sinonimo(actuador,          actuador).
+sinonimo(sistema,           sistemas).
+sinonimo(sistemas,         sistemas).
+sinonimo(ingenieria,       ingenieria).
+sinonimo(ingeniero,        ingenieria).
+sinonimo(ingeniera,        ingenieria).
+sinonimo(ingenieria,       ingenieria).
+
+% ============================================================
+% Fase 5: Valores y Aspiraciones
+% ============================================================
+
+sinonimo(estabilidad,       estabilidad).
+sinonimo(seguridad_laboral, estabilidad).
+sinonimo(buen_salario,     ingreso).
+sinonimo(salario,          ingreso).
+sinonimo(buena_venta,      ingreso).
+sinonimo(ingreso,          ingreso).
+sinonimo(ayudar,           ayudar).
+sinonimo(ayudar_a_otros,   ayudar).
+sinonimo(servir,           ayudar).
+sinonimo(contribucion,    ayudar).
+sinonimo(impacto_social,   ayudar).
+sinonimo(persistente,     persistente).
+sinonimo(perseverante,    persistente).
+sinonimo(-determinado,    determinado).
+sinonimo(determinada,     determinada).
+sinonimo(decidido,         determinado).
+sinonimo(decidida,         determinado).
+sinonimo(curioso,          curioso).
+sinonimo(curiosa,          curioso).
+sinonimo(detallista,       detallista).
+sinonimo(detallada,        detallista).
+sinonimo(preciso,          preciso).
+sinonimo(precisa,          preciso).
+
+% ============================================================
+% Fase 6: Ambientes Laborales
+% ============================================================
+
+sinonimo(oficina,           oficina).
+sinonimo(obra,              obra).
+sinonimo(obras,             obra).
+sinonimo(campo,             campo).
+sinonimo(planta,            planta).
+sinonimo(fabrica,          fabrica).
+sinonimo(fabricas,         fabrica).
+sinonimo(hospital,          hospital).
+sinonimo(clinica,          hospital).
+sinonimo(pacientes,        pacientes).
+sinonimo(consultorio,      consultorio).
+sinonimo(centro_investigacion, laboratorio).
+sinonimo(instituto,        laboratorio).
+
+% ============================================================
+% Fase 7: Palabras de alto impacto (entorno)
+% ============================================================
+
+sinonimo(nasa,             nasa).
+sinonimo(espacion,         espacio).
+sinonimo(aeroespacial,     espacio).
+sinonimo(astronomico,       espacio).
+
+% ============================================================
+% CUALIDADES PERSONALES - Rasgos de personalidad
+% ============================================================
+
+sinonimo(lider,             lider).
+sinonimo(lideres,           lider).
+sinonimo(lideres,          lider).
+sinonimo(liderazgo,        lider).
+sinonimo(sociable,         sociable).
+sinonimo(sociable,         sociable).
+sinonimo(convocado,        sociable).
+sinonimo(introvertido,     introvertido).
+sinonimo(introvertida,     introvertido).
+sinonimo(extrovertido,     extrovertido).
+sinonimo(extrovertida,     extrovertido).
+sinonimo(reservado,        reservado).
+sinonimo(reservada,        reservado).
+sinonimo(callado,          callado).
+sinonimo(callada,          callado).
+sinonimo(parlanchin,       parlanchin).
+sinonimo(parlanchina,      parlanchin).
+sinonimo(comunicativo,     comunicativo).
+sinonimo(comunicativa,     comunicativo).
+sinonimo(conversador,      conversador).
+sinonimo(conversadora,     conversador).
+
+% ============================================================
+% CUALIDADES PERSONALES - Rasgos laborales
+% ============================================================
+
+sinonimo(metodico,          metodico).
+sinonimo(metodica,          metodico).
+sinonimo(sistematico,       metodico).
+sinonimo(sistematica,      metodico).
+sinonimo(organizado,       organizado).
+sinonimo(organizada,       organizado).
+sinonimo(disciplinado,     disciplinado).
+sinonimo(disciplinada,     disciplinado).
+sinonimo(eficiente,        eficiente).
+sinonimo(eficaz,           eficiente).
+sinonimo(productivo,       productivo).
+sinonimo(productiva,       productivo).
+sinonimo(competitivo,      competitivo).
+sinonimo(competitiva,      competitivo).
+sinonimo(ambicioso,        ambicioso).
+sinonimo(ambiciosa,        ambicioso).
+sinonimo(proactivo,        proactivo).
+sinonimo(proactiva,        proactivo).
+sinonimo(receptivo,        receptivo).
+sinonimo(receptiva,        receptivo).
+sinonimo(autodidacta,      autodidacta).
+sinonimo(independiente,    independiente).
+sinonimo(autonomo,         independiente).
+sinonimo(autonoma,         independiente).
+sinonimo(autogestionado,   independiente).
+sinonimo(autogestionada,   independiente).
+
+% ============================================================
+% CUALIDADES PERSONALES - Rasgos cognitivos
+% ============================================================
+
+sinonimo(pensador,         pensador).
+sinonimo(pensadora,        pensador).
+sinonimo(reflexivo,        reflexivo).
+sinonimo(reflexiva,        reflexivo).
+sinonimo(critico,          critico).
+sinonimo(critica,          critico).
+sinonimo(persuasivo,       persuasivo).
+sinonimo(persuasiva,       persuasivo).
+sinonimo(solucionador,     resolutivo).
+sinonimo(solucionadora,    resolutivo).
+sinonimo(resolutivo,       resolutivo).
+sinonimo(resolutiva,       resolutivo).
+sinonimo(innovador,        innovativo).
+sinonimo(innovadora,       innovativo).
+
+% ============================================================
+% CUALIDADES PERSONALES - Rasgos emocionales
+% ============================================================
+
+sinonimo(sensible,         sensible).
+sinonimo(compasivo,        empatico).
+sinonimo(compasiva,        empatico).
+sinonimo(resiliente,       resiliente).
+sinonimo(fuerte,           fuerte).
+sinonimo(emocional,        emocional).
+sinonimo(estable,          estable).
+sinonimo(calmado,          calmado).
+sinonimo(calmada,          calmado).
+sinonimo(sereno,           calmado).
+sinonimo(tranquilo,        calmado).
+sinonimo(tranquila,        calmado).
+
+% ============================================================
+% CUALIDADES PERSONALES - Otros rasgos
+% ============================================================
+
+sinonimo(observador,       observador).
+sinonimo(observadora,      observador).
+sinonimo(detallista,       detallista).
+sinonimo(detallada,        detallista).
+sinonimo(minucioso,        minucioso).
+sinonimo(minuciosa,       minucioso).
+sinonimo(perfeccionista,   perfectionista).
+sinonimo(exigente,         exigente).
+sinonimo(exigente,         exigente).
+sinonimo(perfectionista,   perfectionista).
+sinonimo(paciente,         paciente).
+sinonimo(paciencia,       paciente).
+sinonimo(tolerante,       tolerante).
+sinonimo(flexible,         flexible).
+sinonimo(flexible,        flexible).
+sinonimo(adaptable,       adaptable).
+sinonimo(versatil,        versatil).
+sinonimo(dinamico,        dinamico).
+sinonimo(dinamica,        dinamico).
+sinonimo(energetico,       energetico).
+sinonimo(energetica,       energetico).
+sinonimo(pasivo,          pasivo).
+sinonimo(pasiva,          pasivo).
+sinonimo(indeciso,        indeciso).
+sinonimo(indecisa,        indeciso).
+sinonimo(procrastinador,   procrastinador).
+sinonimo(procrastinadora,  procrastinador).
+sinonimo(desmotivado,      desmotivado).
+sinonimo(desmotivada,      desmotivado).
+sinonimo(estacionario,    estacionario).
+
+% ============================================================
+% MATERIAS ESCOLARES - Ciencias
+% ============================================================
+
+sinonimo(historia_natural, ciencias_naturales).
+sinonimo(ciencias_naturales, ciencias_naturales).
+sinonimo(ciencias_sociales, ciencias_sociales).
+sinonimo(geologia,         geologia).
+sinonimo(biologia_marina,  biologia).
+sinonimo(bioquimica,       bioquimica).
+sinonimo(fisica_cuantica,  fisica).
+sinonimo(termodinamica,    fisica).
+sinonimo(mecanica,         fisica).
+sinonimo(quimica_organica, quimica).
+sinonimo(quimica_inorganica, quimica).
+sinonimo(bioquimica,       bioquimica).
+sinonimo(genetica,         genetica).
+sinonimo(microbiologia,   biologia).
+sinonimo(ecologia,        ecologia).
+
+% ============================================================
+% MATERIAS ESCOLARES - Humanidades
+% ============================================================
+
+sinonimo(historia,         historia).
+sinonimo(historico,        historia).
+sinonimo(historica,        historia).
+sinonimo(geografia,        geografia).
+sinonimo(geografico,       geografia).
+sinonimo(filosofia,       filosofia).
+sinonimo(filosofico,      filosofia).
+sinonimo(sociologia,       sociologia).
+sinonimo(sociologico,      sociologia).
+sinonimo(antropologia,     antropologia).
+sinonimo(economia,        economia).
+sinonimo(economico,       economia).
+sinonimo(civica,           civica).
+sinonimo(educacion_civica, civica).
+sinonimo(etica,            etica).
+sinonimo(valores,         etica).
+
+% ============================================================
+% MATERIAS ESCOLARES - Artes
+% ============================================================
+
+sinonimo(educacion_artistica, artes).
+sinonimo(artes_plasticas,   artes).
+sinonimo(artes_escenicas,   teatro).
+sinonimo(dibujo_artistico,  dibujo).
+sinonimo(pintura_artistica, arte).
+sinonimo(fotografia_artistica, fotografia).
+sinonimo(historia_del_arte, arte).
+sinonimo(educacion_musical, musica).
+sinonimo(teatro,           teatro).
+sinonimo(danza,            danza).
+sinonimo(expresion_corporal, danza).
+sinonimo(artesania,        manualidades).
+sinonimo(manualidades,     manualidades).
+sinonimo( origami,         manualidades).
+
+% ============================================================
+% MATERIAS ESCOLARES - Otros
+% ============================================================
+
+sinonimo(informatica,      computacion).
+sinonimo(computacion,      computacion).
+sinonimo(programacion,     programacion).
+sinonimo(tecnologia_educativa, tecnologia).
+sinonimo(orientacion_escolar, orientacion).
+sinonimo(orientacion,      orientacion).
+sinonimo(emprendimiento,   emprendimiento).
+sinonimo(proyectos,        proyectos).
+sinonimo(liderazgo_escolar, liderazgo).
+sinonimo(habilidades_blandas, habilidades_blandas).
+sinonimo(soft_skills,     habilidades_blandas).
+sinonimo(comunicacion_oral, comunicacion).
+sinonimo(expresion_oral,  comunicacion).
+sinonimo(redaccion,       escritura).
+sinonimo(ortografia,      escritura).
+
+% ============================================================
+% PROFESIONES Y OCCUPACIONES - Salud
+% ============================================================
+
+sinonimo(odontologo,       salud).
+sinonimo(odontologa,       salud).
+sinonimo(dentista,         salud).
+sinonimo(veterinario,      salud).
+sinonimo(veterinaria,      salud).
+sinonimo(optometrista,     salud).
+sinonimo(fisioterapeuta,   salud).
+sinonimo(fisioterapia,     salud).
+sinonimo(nutriologo,       alimentacion).
+sinonimo(nutriologa,       alimentacion).
+sinonimo(nutricionista,    alimentacion).
+sinonimo(paramedico,       salud).
+sinonimo(tecnico_enfermeria, salud).
+sinonimo(radiologo,        salud).
+sinonimo(laboratorista,    salud).
+sinonimo(terapeuta_ocupacional, salud).
+sinonimo(terapeuta_respiratorio, salud).
+sinonimo(optico,           salud).
+sinonimo(pediatra,         salud).
+sinonimo(geriatra,         salud).
+sinonimo(dermatologo,     salud).
+sinonimo(cardiologo,      salud).
+sinonimo(neurologo,        salud).
+sinonimo(oncologo,         salud).
+sinonimo(psiquiatra,      salud).
+
+% ============================================================
+% PROFESIONES Y OCCUPACIONES - Educación
+% ============================================================
+
+sinonimo(instructor,       educacion).
+sinonimo(instructora,      educacion).
+sinonimo(trainer,          educacion).
+sinonimo(capacitador,      educacion).
+sinonimo(capacitadora,     educacion).
+sinonimo(tutor,            tutoria).
+sinonimo(tutora,           tutoria).
+sinonimo(coordinador_academico, educacion).
+sinonimo(coordinadora_academica, educacion).
+sinonimo(orientador_escolar, orientacion).
+sinonimo(maestro_primaria,  educacion).
+sinonimo(maestro_secundaria, educacion).
+sinonimo(profesor_universitario, educacion).
+sinonimo(educador,         educacion).
+sinonimo(educadora,        educacion).
+sinonimo(formador,         educacion).
+sinonimo(formadora,        educacion).
+
+% ============================================================
+% PROFESIONES Y OCCUPACIONES - Arte y Diseño
+% ============================================================
+
+sinonimo(ilustrador,       ilustracion).
+sinonimo(ilustradora,      ilustracion).
+sinonimo(animador,         animacion).
+sinonimo(animadora,        animacion).
+sinonimo(editor_video,    video).
+sinonimo(editora_video,    video).
+sinonimo(compositor,       musica).
+sinonimo(compositora,      musica).
+sinonimo(director_cine,    cine).
+sinonimo(directora_cine,   cine).
+sinonimo(escenografo,      teatro).
+sinonimo(escenografa,      teatro).
+sinonimo(estilista,        estilista).
+sinonimo(artista,          arte).
+sinonimo(artista_visual,  arte).
+sinonimo(dibujante,        dibujo).
+sinonimo(pintor,          arte).
+sinonimo(pintora,         arte).
+sinonimo(escultor,         arte).
+sinonimo(escultora,        arte).
+sinonimo(fotografo,        fotografia).
+sinonimo(fotografa,        fotografia).
+sinonimo(disennador_textil, diseno).
+sinonimo(disennadora_textil, diseno).
+sinonimo(disennador_industrial, diseno).
+sinonimo(disennadora_industrial, diseno).
+sinonimo(disennador_interiores, diseno).
+sinonimo(disennadora_interiores, diseno).
+sinonimo(publicista,       publicidad).
+sinonimo(mercadologo,      marketing).
+sinonimo(mercadologa,      marketing).
+
+% ============================================================
+% PROFESIONES Y OCCUPACIONES - Tecnología
+% ============================================================
+
+sinonimo(desarrollador,    programacion).
+sinonimo(desarrolladora,   programacion).
+sinonimo(coder,            programacion).
+sinonimo(programador_web,  programacion).
+sinonimo(sysadmin,         sistemas).
+sinonimo(sistemas,         sistemas).
+sinonimo(devops,           sistemas).
+sinonimo(ciberseguridad,   seguridad).
+sinonimo(seguridad_informatica, seguridad).
+sinonimo(data_scientist,   datos).
+sinonimo(analista_datos,   datos).
+sinonimo(ingeniero_datos,  datos).
+sinonimo(ai_specialist,    inteligencia_artificial).
+sinonimo(machine_learning, inteligencia_artificial).
+sinonimo(qa,               calidad).
+sinonimo(quality_assurance, calidad).
+sinonimo(tester,           calidad).
+sinonimo(soporte_tecnico,  soporte).
+sinonimo(it_specialist,   soporte).
+sinonimo(ux_designer,      diseno).
+sinonimo(disennador_ux,    diseno).
+sinonimo(disennador_ui,    diseno).
+sinonimo(frontend,        programacion).
+sinonimo(backend,         programacion).
+sinonimo(fullstack,       programacion).
+sinonimo(arquitecto_software, programacion).
+sinonimo(tech_lead,       liderazgo).
+
+% ============================================================
+% PROFESIONES Y OCCUPACIONES - Negocios
+% ============================================================
+
+sinonimo(contador,         finanzas).
+sinonimo(contadora,        finanzas).
+sinonimo(auditor,          finanzas).
+sinonimo(auditora,         finanzas).
+sinonimo(banquero,        finanzas).
+sinonimo(banquera,        finanzas).
+sinonimo(inversionista,   finanzas).
+sinonimo(consultor,        consultoria).
+sinonimo(consultora,      consultoria).
+sinonimo(asesor_financiero, finanzas).
+sinonimo(asesor_empresarial, consultoria).
+sinonimo(recruiter,        recursos_humanos).
+sinonimo(reclutador,       recursos_humanos).
+sinonimo(hr_manager,      recursos_humanos).
+sinonimo(gerente_hr,       recursos_humanos).
+sinonimo(gerente,         gerencia).
+sinonimo(gerenta,         gerencia).
+sinonimo(director,        direccion).
+sinonimo(directora,        direccion).
+sinonimo(ejecutivo,       ejecutivo).
+sinonimo(ejecutiva,       ejecutivo).
+sinonimo(emprendedor,      emprendimiento).
+sinonimo(emprendedora,     emprendimiento).
+sinonimo(ceo,             direccion).
+sinonimo(cto,             tecnologia).
+sinonimo(cfo,             finanzas).
+sinonimo(cmo,             marketing).
+sinonimo(coo,             operaciones).
+
+% ============================================================
+% PROFESIONES Y OCCUPACIONES - Comunicación
+% ============================================================
+
+sinonimo(locutor,          comunicacion).
+sinonimo(locutora,         comunicacion).
+sinonimo(presentador,      television).
+sinonimo(presentadora,     television).
+sinonimo(influencer,       redes_sociales).
+sinonimo(content_creator,  contenido).
+sinonimo(community_manager, redes_sociales).
+sinonimo(relaciones_publicas, comunicacion).
+sinonimo(copywriter,       escritura).
+sinonimo(redactor,         escritura).
+sinonimo(periodista,       periodismo).
+sinonimo(cronista,         periodismo).
+sinonimo(corresponsal,     periodismo).
+sinonimo(redactor_jefe,    periodismo).
+sinonimo(editor,           editando).
+sinonimo(editora,          editando).
+sinonimo(productor_tv,    television).
+sinonimo(productora_tv,    television).
+sinonimo(productor_cine,   cine).
+sinonimo(productora_cine,  cine).
